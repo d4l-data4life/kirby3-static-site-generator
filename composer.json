@@ -1,0 +1,20 @@
+{
+  "name": "d4l/static-site-generator",
+  "version": "1.0.0",
+  "type": "kirby-plugin",
+  "description": "Static site generator plugin for Kirby 3",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "D4L data4life gGmbH",
+      "email": "contact@data4life.care",
+      "homepage": "https://www.data4life.care"
+    }
+  ],
+  "config": {
+    "optimize-autoloader": true
+  },
+  "require": {
+    "getkirby/composer-installer": "^1.1"
+  }
+}
