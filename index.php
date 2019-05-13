@@ -3,7 +3,9 @@ namespace D4L;
 
 use Kirby;
 
+require_once __DIR__ . DS . 'media.class.php';
 require_once __DIR__ . DS . 'class.php';
+
 
 Kirby::plugin('d4l/static-site-generator', [
   'api' => [

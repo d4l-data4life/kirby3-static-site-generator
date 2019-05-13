@@ -9,12 +9,12 @@ use Kirby\Cms\App;
 use Kirby\Cms\Ingredients;
 use Kirby\Cms\Page;
 
+
 class StaticSiteGenerator
 {
   protected $_kirby;
   protected $_pathsToCopy;
   protected $_outputFolder;
-  protected $_baseUrl;
 
   protected $_originalUrls = [];
   protected $_originalLanguageCode;
@@ -26,7 +26,7 @@ class StaticSiteGenerator
   {
     $this->_kirby = $kirby;
 
-    $this->_pathsToCopy = $pathsToCopy ?: [$kirby->roots()->assets(), $kirby->roots()->media()];
+    $this->_pathsToCopy = $pathsToCopy ?: [$kirby->roots()->assets()];
     $this->_pathsToCopy = $this->_resolveRelativePaths($this->_pathsToCopy);
     $this->_outputFolder = $this->_resolveRelativePath('./static');
 
@@ -55,6 +55,7 @@ class StaticSiteGenerator
   {
     $baseUrl = rtrim($baseUrl, '/') ?: '/';
     $this->_modifyUrls($baseUrl);
+    StaticSiteGeneratorMedia::setActive(true);
 
     $kirby = $this->_kirby;
     $languages = $kirby->languages();
@@ -67,7 +68,12 @@ class StaticSiteGenerator
       $this->_generatePagesByLanguage($baseUrl, $languageCode);
     }
 
+    $this->_copyMediaFiles($baseUrl);
+
+    StaticSiteGeneratorMedia::setActive(false);
+    StaticSiteGeneratorMedia::clearList();
     $this->_restoreUrls();
+
     return $this->_fileList;
   }
 
@@ -128,6 +134,23 @@ class StaticSiteGenerator
     return $this->_fileList;
   }
 
+  protected function _copyMediaFiles(string $baseUrl = '/')
+  {
+    $outputFolder = $this->_outputFolder;
+    $mediaList = StaticSiteGeneratorMedia::getList();
+
+    foreach ($mediaList as $item) {
+      $file = $item['root'];
+      $path = str_replace($baseUrl, '/', $item['url']);
+      $path = str_replace('//', '/', $path);
+      $path =  $outputFolder . str_replace('/', DS, $path);
+      $this->_copyFile($file, $path);
+    }
+
+    $this->_fileList = array_unique($this->_fileList);
+    return $this->_fileList;
+  }
+
   protected function _copyFile($file, $targetPath)
   {
     if (F::copy($file, $targetPath)) {
@@ -179,8 +202,13 @@ class StaticSiteGenerator
 
   protected function _modifyUrls(string $baseUrl)
   {
+    $originalBaseUrl = $this->_kirby->urls()->base();
+    $mediaUrl = $baseUrl . str_replace($originalBaseUrl, '', $this->_kirby->urls()->media());
+    $mediaUrl = str_replace('//', '/', $mediaUrl);
+
     $this->_modifyUrl('index', $baseUrl);
     $this->_modifyUrl('base', $baseUrl);
+    $this->_modifyUrl('media', $mediaUrl);
 
     $urlKeys = array_keys($this->_originalUrls);
     foreach ($this->_kirby->roots()->toArray() as $key => $root) {
