@@ -4,6 +4,20 @@
 
 With this plugin you can create a directory with assets, media and static html files generated from your pages. You can simply upload the generated files to any CDN and everything (with small exceptions, see below) will still work. The result is an even faster site with less potential vulnerabilities.
 
+## Example
+
+![static site generator field example](example.gif)
+
+## What is Kirby?
+
+[Kirby](https://getkirby.com) is a highly [customizable](https://getkirby.com/docs/guide/blueprints/introduction) and [file-based](https://getkirby.com/docs/guide/database) CMS (content management system). Before using this plugin make sure you have [installed](https://getkirby.com/docs/guide/installation) the latest version of Kirby CMS and are familiar with the [plugin basics](https://getkirby.com/docs/guide/plugins/plugin-basics).
+
+## How to install the plugin
+
+If you use composer, you can install the plugin with: `composer require *TODO*`
+
+Alternatively, create a `static-site-generator` folder in `site/plugins`, download this repository and extract its contents into the new folder.
+
 ## What works
 
 - Compatibility with multilanguage sites
@@ -20,10 +34,6 @@ With this plugin you can create a directory with assets, media and static html f
 - Custom routes
 - Query parameters (unless processed by javascript)
 - Directly opening the html files in the browser with the file protocol (absolute base url `/`)
-
-## Example
-
-![static site generator field example](example.gif)
 
 ## How to use it
 
@@ -83,4 +93,13 @@ error: Custom error message
 
 Be very careful when specifying the output folder, as the given path will be erased before the generation!
 
+## Contribute
+
 Feedback and contributions are welcome!
+
+For commit messages we're following the [gitmoji](https://gitmoji.carloscuesta.me/) guide :smiley:
+Below you can find an example commit message for fixing a bug:
+:bug: fix copying of individual files
+
+Please post all bug reports in our issue tracker.
+We have prepared a template which will make it easier to describe the bug.
