@@ -14,7 +14,7 @@ With this plugin you can create a directory with assets, media and static html f
 
 ## How to install the plugin
 
-If you use composer, you can install the plugin with: `composer require *TODO*`
+If you use composer, you can install the plugin with: `composer require d4l/kirby-static-site-generator`
 
 Alternatively, create a `static-site-generator` folder in `site/plugins`, download this repository and extract its contents into the new folder.
 
