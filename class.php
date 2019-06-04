@@ -63,12 +63,11 @@ class StaticSiteGenerator
 
     $homePage = $this->_pages->findBy('isHomePage', 'true');
     $this->_setPageLanguage($homePage, $this->_defaultLanguage);
-    $this->_generatePage($homePage, $this->_outputFolder . DS . 'index.html');
+    $this->_generatePage($homePage, $this->_outputFolder . DS . 'index.html', $baseUrl);
 
     foreach ($this->_languages as $languageCode) {
       $this->_generatePagesByLanguage($baseUrl, $languageCode);
     }
-
     $this->_copyMediaFiles($baseUrl);
 
     StaticSiteGeneratorMedia::setActive(false);
@@ -86,7 +85,7 @@ class StaticSiteGenerator
       $path = str_replace($baseUrl, '/', $page->url());
       $path = str_replace('//', '/', $path);
       $path = $this->_outputFolder . str_replace('/', DS, $path) . DS . 'index.html';
-      $this->_generatePage($page, $path);
+      $this->_generatePage($page, $path, $baseUrl);
     }
   }
 
@@ -102,9 +101,12 @@ class StaticSiteGenerator
     $kirby->site()->visit($page, $languageCode);
   }
 
-  protected function _generatePage(Page $page, string $path)
+  protected function _generatePage(Page $page, string $path, string $baseUrl)
   {
+    $originalBaseUrl = $this->_originalUrls['base'];
     $html = $page->render();
+    $html = str_replace("$originalBaseUrl/", $baseUrl, $html);
+    $html = str_replace($originalBaseUrl, $baseUrl, $html);
     F::write($path, $html);
 
     $this->_fileList = array_unique(array_merge($this->_fileList, [$path]));
@@ -208,7 +210,7 @@ class StaticSiteGenerator
     $mediaUrl = str_replace('//', '/', $mediaUrl);
 
     $this->_modifyUrl('index', $baseUrl);
-    $this->_modifyUrl('base', $baseUrl);
+    $this->_modifyUrl('base', '');
     $this->_modifyUrl('media', $mediaUrl);
 
     $urlKeys = array_keys($this->_originalUrls);
