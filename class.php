@@ -17,10 +17,12 @@ class StaticSiteGenerator
   protected $_outputFolder;
 
   protected $_originalUrls = [];
-  protected $_originalLanguageCode;
 
   protected $_pages;
   protected $_fileList = [];
+
+  protected $_defaultLanguage;
+  protected $_languages;
 
   public function __construct(App $kirby, array $pathsToCopy = null)
   {
@@ -31,8 +33,10 @@ class StaticSiteGenerator
     $this->_outputFolder = $this->_resolveRelativePath('./static');
 
     $this->_originalUrls = $kirby->urls()->toArray();
-    $this->_originalLanguageCode = $kirby->language()->code();
     $this->_pages = $kirby->site()->index();
+
+    $this->_defaultLanguage = $kirby->languages()->default();
+    $this->_languages = $this->_defaultLanguage ? $kirby->languages()->keys() : [$this->_defaultLanguage];
   }
 
   public function generate(string $outputFolder = './static', string $baseUrl = '/', array $preserve = [])
@@ -57,14 +61,11 @@ class StaticSiteGenerator
     $this->_modifyUrls($baseUrl);
     StaticSiteGeneratorMedia::setActive(true);
 
-    $kirby = $this->_kirby;
-    $languages = $kirby->languages();
-
     $homePage = $this->_pages->findBy('isHomePage', 'true');
-    $this->_setPageLanguage($homePage, $languages->default()->code());
+    $this->_setPageLanguage($homePage, $this->_defaultLanguage);
     $this->_generatePage($homePage, $this->_outputFolder . DS . 'index.html');
 
-    foreach ($languages->keys() as $languageCode) {
+    foreach ($this->_languages as $languageCode) {
       $this->_generatePagesByLanguage($baseUrl, $languageCode);
     }
 
@@ -77,7 +78,7 @@ class StaticSiteGenerator
     return $this->_fileList;
   }
 
-  protected function _generatePagesByLanguage(string $baseUrl, string $languageCode)
+  protected function _generatePagesByLanguage(string $baseUrl, string $languageCode = null)
   {
     foreach ($this->_pages->keys() as $key) {
       $page = $this->_pages->$key;
@@ -89,7 +90,7 @@ class StaticSiteGenerator
     }
   }
 
-  protected function _setPageLanguage(Page $page, string $languageCode)
+  protected function _setPageLanguage(Page $page, string $languageCode = null)
   {
     foreach ($this->_pages as $page) {
       $page->content = null;
@@ -270,3 +271,4 @@ class StaticSiteGenerator
     return realpath($path) ?: $path;
   }
 }
+
