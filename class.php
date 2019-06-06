@@ -1,12 +1,10 @@
 <?php
 namespace D4L;
 
-use Closure;
 use Dir;
 use Error;
 use F;
 use Kirby\Cms\App;
-use Kirby\Cms\Ingredients;
 use Kirby\Cms\Page;
 
 
@@ -16,11 +14,12 @@ class StaticSiteGenerator
   protected $_pathsToCopy;
   protected $_outputFolder;
 
-  protected $_originalUrls = [];
-  protected $_originalLanguageCode;
-
   protected $_pages;
   protected $_fileList = [];
+
+  protected $_originalBaseUrl;
+  protected $_defaultLanguage;
+  protected $_languages;
 
   public function __construct(App $kirby, array $pathsToCopy = null)
   {
@@ -30,9 +29,11 @@ class StaticSiteGenerator
     $this->_pathsToCopy = $this->_resolveRelativePaths($this->_pathsToCopy);
     $this->_outputFolder = $this->_resolveRelativePath('./static');
 
-    $this->_originalUrls = $kirby->urls()->toArray();
-    $this->_originalLanguageCode = $kirby->language()->code();
     $this->_pages = $kirby->site()->index();
+
+    $this->_originalBaseUrl = $kirby->urls()->base();
+    $this->_defaultLanguage = $kirby->languages()->default();
+    $this->_languages = $this->_defaultLanguage ? $kirby->languages()->keys() : [$this->_defaultLanguage];
   }
 
   public function generate(string $outputFolder = './static', string $baseUrl = '/', array $preserve = [])
@@ -53,43 +54,37 @@ class StaticSiteGenerator
 
   public function generatePages(string $baseUrl = '/')
   {
-    $baseUrl = rtrim($baseUrl, '/') ?: '/';
-    $this->_modifyUrls($baseUrl);
+    $baseUrl = rtrim($baseUrl, '/') . '/';
     StaticSiteGeneratorMedia::setActive(true);
 
-    $kirby = $this->_kirby;
-    $languages = $kirby->languages();
-
     $homePage = $this->_pages->findBy('isHomePage', 'true');
-    $this->_setPageLanguage($homePage, $languages->default()->code());
-    $this->_generatePage($homePage, $this->_outputFolder . DS . 'index.html');
+    $this->_setPageLanguage($homePage, $this->_defaultLanguage);
+    $this->_generatePage($homePage, $this->_outputFolder . DS . 'index.html', $baseUrl);
 
-    foreach ($languages->keys() as $languageCode) {
+    foreach ($this->_languages as $languageCode) {
       $this->_generatePagesByLanguage($baseUrl, $languageCode);
     }
-
-    $this->_copyMediaFiles($baseUrl);
+    $this->_copyMediaFiles();
 
     StaticSiteGeneratorMedia::setActive(false);
     StaticSiteGeneratorMedia::clearList();
-    $this->_restoreUrls();
 
     return $this->_fileList;
   }
 
-  protected function _generatePagesByLanguage(string $baseUrl, string $languageCode)
+  protected function _generatePagesByLanguage(string $baseUrl, string $languageCode = null)
   {
     foreach ($this->_pages->keys() as $key) {
       $page = $this->_pages->$key;
       $this->_setPageLanguage($page, $languageCode);
-      $path = str_replace($baseUrl, '/', $page->url());
+      $path = str_replace($this->_originalBaseUrl, '/', $page->url());
       $path = str_replace('//', '/', $path);
       $path = $this->_outputFolder . str_replace('/', DS, $path) . DS . 'index.html';
-      $this->_generatePage($page, $path);
+      $this->_generatePage($page, $path, $baseUrl);
     }
   }
 
-  protected function _setPageLanguage(Page $page, string $languageCode)
+  protected function _setPageLanguage(Page $page, string $languageCode = null)
   {
     foreach ($this->_pages as $page) {
       $page->content = null;
@@ -101,9 +96,12 @@ class StaticSiteGenerator
     $kirby->site()->visit($page, $languageCode);
   }
 
-  protected function _generatePage(Page $page, string $path)
+  protected function _generatePage(Page $page, string $path, string $baseUrl)
   {
     $html = $page->render();
+    $html = str_replace($this->_originalBaseUrl . '/', $baseUrl, $html);
+    $html = str_replace($this->_originalBaseUrl, $baseUrl, $html);
+
     F::write($path, $html);
 
     $this->_fileList = array_unique(array_merge($this->_fileList, [$path]));
@@ -134,14 +132,14 @@ class StaticSiteGenerator
     return $this->_fileList;
   }
 
-  protected function _copyMediaFiles(string $baseUrl = '/')
+  protected function _copyMediaFiles()
   {
     $outputFolder = $this->_outputFolder;
     $mediaList = StaticSiteGeneratorMedia::getList();
 
     foreach ($mediaList as $item) {
       $file = $item['root'];
-      $path = str_replace($baseUrl, '/', $item['url']);
+      $path = str_replace($this->_originalBaseUrl, '/', $item['url']);
       $path = str_replace('//', '/', $path);
       $path =  $outputFolder . str_replace('/', DS, $path);
       $this->_copyFile($file, $path);
@@ -198,59 +196,6 @@ class StaticSiteGenerator
 
       return array_merge($list, [$item]);
     }, []) ?: [];
-  }
-
-  protected function _modifyUrls(string $baseUrl)
-  {
-    $originalBaseUrl = $this->_kirby->urls()->base();
-    $mediaUrl = $baseUrl . str_replace($originalBaseUrl, '', $this->_kirby->urls()->media());
-    $mediaUrl = str_replace('//', '/', $mediaUrl);
-
-    $this->_modifyUrl('index', $baseUrl);
-    $this->_modifyUrl('base', $baseUrl);
-    $this->_modifyUrl('media', $mediaUrl);
-
-    $urlKeys = array_keys($this->_originalUrls);
-    foreach ($this->_kirby->roots()->toArray() as $key => $root) {
-      if (in_array($root, $this->_pathsToCopy) && in_array($key, $urlKeys)) {
-        $folderName = $this->_getFolderName($root);
-        $this->_modifyUrl($key, $baseUrl . '/' . $folderName);
-      }
-    }
-  }
-
-  protected function _modifyUrl(string $property, string $url)
-  {
-    $url = str_replace('//', '/', $url);
-    $setUrl = $this->_getUrlSetter();
-    $setUrl($this->_kirby, $property, $url);
-  }
-
-  protected function _restoreUrls()
-  {
-    $urls = $this->_kirby->urls();
-    foreach ($this->_originalUrls as $key => $originalUrl) {
-      if ($originalUrl !== $urls->$key()) {
-        $this->_restoreUrl($key);
-      }
-    }
-  }
-
-  protected function _restoreUrl(string $property)
-  {
-    if (isset($this->_originalUrls[$property])) {
-      $setUrl = $this->_getUrlSetter();
-      $setUrl($this->_kirby, $property, $this->_originalUrls[$property]);
-    }
-  }
-
-  protected function _getUrlSetter()
-  {
-    return Closure::bind(function (App $kirby, string $property, string $value) {
-      $urls = $kirby->urls->toArray();
-      $urls[$property] = $value;
-      return $kirby->urls = new Ingredients($urls);
-    }, null, 'Kirby\Cms\App');
   }
 
   protected function _resolveRelativePaths(array $paths)
