@@ -99,7 +99,7 @@ class StaticSiteGenerator
   protected function _generatePage(Page $page, string $path, string $baseUrl)
   {
     $html = $page->render();
-    $html = str_replace("$this->_originalBaseUrl/", $baseUrl, $html);
+    $html = str_replace($this->_originalBaseUrl . '/', $baseUrl, $html);
     $html = str_replace($this->_originalBaseUrl, $baseUrl, $html);
 
     F::write($path, $html);
