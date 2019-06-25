@@ -58,7 +58,7 @@ class StaticSiteGenerator
     StaticSiteGeneratorMedia::setActive(true);
 
     $homePage = $this->_pages->findBy('isHomePage', 'true');
-    $this->_setPageLanguage($homePage, $this->_defaultLanguage);
+    $this->_setPageLanguage($homePage, $this->_defaultLanguage->code());
     $this->_generatePage($homePage, $this->_outputFolder . DS . 'index.html', $baseUrl);
 
     foreach ($this->_languages as $languageCode) {
@@ -99,8 +99,13 @@ class StaticSiteGenerator
   protected function _generatePage(Page $page, string $path, string $baseUrl)
   {
     $html = $page->render();
+
+    $jsonOriginalBaseUrl = trim(json_encode($this->_originalBaseUrl), '"');
+    $jsonBaseUrl = trim(json_encode($baseUrl), '"');
     $html = str_replace($this->_originalBaseUrl . '/', $baseUrl, $html);
     $html = str_replace($this->_originalBaseUrl, $baseUrl, $html);
+    $html = str_replace($jsonOriginalBaseUrl . '\\/', $jsonBaseUrl, $html);
+    $html = str_replace($jsonOriginalBaseUrl, $jsonBaseUrl, $html);
 
     F::write($path, $html);
 
