@@ -6,6 +6,7 @@ use Error;
 use F;
 use Kirby\Cms\App;
 use Kirby\Cms\Page;
+use Whoops\Exception\ErrorException;
 
 
 class StaticSiteGenerator
@@ -80,7 +81,11 @@ class StaticSiteGenerator
       $path = str_replace($this->_originalBaseUrl, '/', $page->url());
       $path = str_replace('//', '/', $path);
       $path = $this->_outputFolder . str_replace('/', DS, $path) . DS . 'index.html';
-      $this->_generatePage($page, $path, $baseUrl);
+      try {
+        $this->_generatePage($page, $path, $baseUrl);
+      } catch(ErrorException $error) {
+        $this->_handleRenderError($error, $key, $languageCode);
+      }
     }
   }
 
@@ -218,5 +223,13 @@ class StaticSiteGenerator
 
     $path = $this->_kirby->roots()->index() . DS . $path;
     return realpath($path) ?: $path;
+  }
+
+  protected function _handleRenderError(ErrorException $error, string $key, string $languageCode = null)
+  {
+    $message = $error->getMessage();
+    $file = str_replace($this->_kirby->roots()->index(), '', $error->getFile());
+    $line = $error->getLine();
+    throw new Error("Error in $file line $line while rendering page \"$key\"" . ($languageCode ? " ($languageCode)" : '') . ": $message");
   }
 }
