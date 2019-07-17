@@ -58,7 +58,7 @@ class StaticSiteGenerator
     StaticSiteGeneratorMedia::setActive(true);
 
     $homePage = $this->_pages->findBy('isHomePage', 'true');
-    $this->_setPageLanguage($homePage, $this->_defaultLanguage->code());
+    $this->_setPageLanguage($homePage, $this->_defaultLanguage ? $this->_defaultLanguage->code() : null);
     $this->_generatePage($homePage, $this->_outputFolder . DS . 'index.html', $baseUrl);
 
     foreach ($this->_languages as $languageCode) {
