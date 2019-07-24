@@ -42,6 +42,7 @@ class StaticSiteGenerator
   {
     $this->_outputFolder = $this->_resolveRelativePath($outputFolder ?: $this->_outputFolder);
     $this->_checkOutputFolder();
+    F::write($this->_outputFolder . '/.kirbystatic', '');
 
     $this->clearFolder($this->_outputFolder, $preserve);
     $this->generatePages($baseUrl);
@@ -232,26 +233,26 @@ class StaticSiteGenerator
       throw new Error('Error: Please specify a valid output folder!');
     }
 
-    if (!Dir::isWritable($folder)) {
-      throw new Error('Error: The output folder is not writable');
-    }
-
     if (Dir::isEmpty($folder)) {
       return;
+    }
+
+    if (!Dir::isWritable($folder)) {
+      throw new Error('Error: The output folder is not writable');
     }
 
     $fileList = array_map(function ($path) use ($folder) {
       return str_replace($folder . '/', '', $path);
     }, $this->_getFileList($folder));
 
-    if (in_array('index.html', $fileList)) {
+    if (in_array('index.html', $fileList) || in_array('.kirbystatic', $fileList)) {
       return;
     }
 
     throw new Error(
       'Hello! It seems the given output folder "' . $folder . '" already contains other files or folders. ' .
         'Please specify a path that does not exist yet, or is empty. If it absolutely has to be this path, create ' .
-        'an index.html file (can be empty) and retry. WARNING: Any contents of the output folder not starting with "." ' .
+        'an empty .kirbystatic file and retry. WARNING: Any contents of the output folder not starting with "." ' .
         'are ERASED before generation! Information on preserving individual files and folders can be found in the Readme.'
     );
   }
