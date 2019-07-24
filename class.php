@@ -93,6 +93,10 @@ class StaticSiteGenerator
   {
     foreach ($this->_pages as $page) {
       $page->content = null;
+
+      foreach ($page->files() as $file) {
+        $file->content = null;
+      }
     }
 
     $kirby = $this->_kirby;
