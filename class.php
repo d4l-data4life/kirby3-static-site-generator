@@ -92,7 +92,8 @@ class StaticSiteGenerator
   protected function _setPageLanguage(Page $page, string $languageCode = null)
   {
     $kirby = $this->_kirby;
-    $pages = $kirby->site()->index();
+    $site = $kirby->site();
+    $pages = $site->index();
 
     foreach ($pages as $page) {
       $page->content = null;
@@ -101,13 +102,13 @@ class StaticSiteGenerator
       }
     }
 
-    $kirby->site()->content = null;
-    foreach ($kirby->site()->files() as $file) {
+    $site->content = null;
+    foreach ($site->files() as $file) {
       $file->content = null;
     }
 
     $kirby->cache('pages')->flush();
-    $kirby->site()->visit($page, $languageCode);
+    $site->visit($page, $languageCode);
   }
 
   protected function _generatePage(Page $page, string $path, string $baseUrl)
