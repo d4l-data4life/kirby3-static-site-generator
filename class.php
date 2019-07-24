@@ -253,7 +253,7 @@ class StaticSiteGenerator
       'Hello! It seems the given output folder "' . $folder . '" already contains other files or folders. ' .
         'Please specify a path that does not exist yet, or is empty. If it absolutely has to be this path, create ' .
         'an empty .kirbystatic file and retry. WARNING: Any contents of the output folder not starting with "." ' .
-        'are ERASED before generation! Information on preserving individual files and folders can be found in the Readme.'
+        'are erased before generation! Information on preserving individual files and folders can be found in the Readme.'
     );
   }
 
