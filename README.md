@@ -45,7 +45,7 @@ $fileList = $staticSiteGenerator->generate($outputFolder = './static', $baseUrl 
 ```
 
 - `$pathsToCopy`: if not given, `$kirby->roots()->assets()` is used; set to `[]` to skip copying other files than media
-- use `$preserve` to preserve individual files or folders in your output folder, e.g. if the folder is a git repository, set `$preserve`to `['.git']`; also useful to preserve for example a favicon directly in the root of the output folder
+- use `$preserve` to preserve individual files or folders in your output folder, e.g. if you want to preserve a `README.md` in your output folder, set `$preserve`to `['README.md']`; any files or folders directly in the root level and starting with `.` are always preserved (e.g. `.git`)
 
 ### 2) By triggering an endpoint
 
@@ -68,9 +68,10 @@ fields:
 return [
     'd4l' => [
       'static_site_generator' => [
-        'endpoint' => null, # set to a string to use the built-in webhook, e.g. when using the blueprint field
+        'endpoint' => null, # set to any string like 'generate-static-site' to use the built-in endpoint (necessary when using the blueprint field)
         'output_folder' => './static', # you can specify an absolute or relative path
-        'base_url' => '/', # if the static site is not mounted to the root folder of your domain, change accordingly here
+        'preserve' => [], # preserve individual files / folders in the root level of the output folder (anything starting with "." is always preserved)
+        'base_url' => '/' # if the static site is not mounted to the root folder of your domain, change accordingly here
       ]
     ]
 ];
@@ -91,7 +92,7 @@ error: Custom error message
 
 ## Warnings
 
-Be very careful when specifying the output folder, as the given path will be erased before the generation!
+Be careful when specifying the output folder, as the given path (except files starting with `.`) will be erased before the generation! There is a safety check in place to avoid accidental erasure when specifying existing, non-empty folders.
 
 ## Contribute
 
