@@ -1,4 +1,5 @@
 <?php
+
 namespace D4L;
 
 use Dir;
@@ -40,9 +41,8 @@ class StaticSiteGenerator
   public function generate(string $outputFolder = './static', string $baseUrl = '/', array $preserve = [])
   {
     $this->_outputFolder = $this->_resolveRelativePath($outputFolder ?: $this->_outputFolder);
-    if (!$this->_outputFolder || $this->_outputFolder === $this->_kirby->roots()->index()) {
-      throw new Error('Please specify a valid output folder!');
-    }
+    $this->_checkOutputFolder();
+    F::write($this->_outputFolder . '/.kirbystatic', '');
 
     $this->clearFolder($this->_outputFolder, $preserve);
     $this->generatePages($baseUrl);
@@ -83,7 +83,7 @@ class StaticSiteGenerator
       $path = $this->_outputFolder . str_replace('/', DS, $path) . DS . 'index.html';
       try {
         $this->_generatePage($page, $path, $baseUrl);
-      } catch(ErrorException $error) {
+      } catch (ErrorException $error) {
         $this->_handleRenderError($error, $key, $languageCode);
       }
     }
@@ -181,13 +181,14 @@ class StaticSiteGenerator
   public function clearFolder(string $folder, array $preserve = [])
   {
     $folder = $this->_resolveRelativePath($folder);
-    if (!count($preserve)) {
-      return Dir::remove($folder);
-    }
-
     $items = $this->_getFileList($folder);
     return array_reduce($items, function ($totalResult, $item) use ($preserve) {
-      if (in_array($this->_getFolderName($item), $preserve)) {
+      $folderName = $this->_getFolderName($item);
+      if (in_array($folderName, $preserve)) {
+        return $totalResult;
+      }
+
+      if (strpos($folderName, '.') === 0) {
         return $totalResult;
       }
 
@@ -233,6 +234,37 @@ class StaticSiteGenerator
 
     $path = $this->_kirby->roots()->index() . DS . $path;
     return realpath($path) ?: $path;
+  }
+
+  protected function _checkOutputFolder()
+  {
+    $folder = $this->_outputFolder;
+    if (!$folder) {
+      throw new Error('Error: Please specify a valid output folder!');
+    }
+
+    if (Dir::isEmpty($folder)) {
+      return;
+    }
+
+    if (!Dir::isWritable($folder)) {
+      throw new Error('Error: The output folder is not writable');
+    }
+
+    $fileList = array_map(function ($path) use ($folder) {
+      return str_replace($folder . '/', '', $path);
+    }, $this->_getFileList($folder));
+
+    if (in_array('index.html', $fileList) || in_array('.kirbystatic', $fileList)) {
+      return;
+    }
+
+    throw new Error(
+      'Hello! It seems the given output folder "' . $folder . '" already contains other files or folders. ' .
+        'Please specify a path that does not exist yet, or is empty. If it absolutely has to be this path, create ' .
+        'an empty .kirbystatic file and retry. WARNING: Any contents of the output folder not starting with "." ' .
+        'are erased before generation! Information on preserving individual files and folders can be found in the Readme.'
+    );
   }
 
   protected function _handleRenderError(ErrorException $error, string $key, string $languageCode = null)
