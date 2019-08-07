@@ -23,6 +23,8 @@ class StaticSiteGenerator
   protected $_defaultLanguage;
   protected $_languages;
 
+  protected $_skipCopyingMedia = false;
+
   public function __construct(App $kirby, array $pathsToCopy = null)
   {
     $this->_kirby = $kirby;
@@ -56,7 +58,9 @@ class StaticSiteGenerator
   public function generatePages(string $baseUrl = '/')
   {
     $baseUrl = rtrim($baseUrl, '/') . '/';
-    StaticSiteGeneratorMedia::setActive(true);
+
+    $copyMedia = !$this->_skipCopyingMedia;
+    $copyMedia && StaticSiteGeneratorMedia::setActive(true);
 
     $homePage = $this->_pages->findBy('isHomePage', 'true');
     $this->_setPageLanguage($homePage, $this->_defaultLanguage ? $this->_defaultLanguage->code() : null);
@@ -65,12 +69,20 @@ class StaticSiteGenerator
     foreach ($this->_languages as $languageCode) {
       $this->_generatePagesByLanguage($baseUrl, $languageCode);
     }
-    $this->_copyMediaFiles();
 
-    StaticSiteGeneratorMedia::setActive(false);
-    StaticSiteGeneratorMedia::clearList();
+    if ($copyMedia) {
+      $this->_copyMediaFiles();
+
+      StaticSiteGeneratorMedia::setActive(false);
+      StaticSiteGeneratorMedia::clearList();
+    }
 
     return $this->_fileList;
+  }
+
+  public function skipMedia($skipCopyingMedia = true)
+  {
+    $this->_skipCopyingMedia = $skipCopyingMedia;
   }
 
   protected function _generatePagesByLanguage(string $baseUrl, string $languageCode = null)
