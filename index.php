@@ -24,8 +24,10 @@ Kirby::plugin('d4l/static-site-generator', [
             $baseUrl = $kirby->option('d4l.static_site_generator.base_url', '/');
             $preserve = $kirby->option('d4l.static_site_generator.preserve', []);
             $skipMedia = $kirby->option('d4l.static_site_generator.skip_media', false);
+            $skipTemplates = array_diff($kirby->option('d4l.static_site_generator.skip_templates', []), ['home']);
 
-            $staticSiteGenerator = new StaticSiteGenerator($kirby);
+            $pages = $kirby->site()->index()->filterBy('intendedTemplate', 'not in', $skipTemplates);
+            $staticSiteGenerator = new StaticSiteGenerator($kirby, null, $pages);
             $staticSiteGenerator->skipMedia($skipMedia);
             $list = $staticSiteGenerator->generate($outputFolder, $baseUrl, $preserve);
             $count = count($list);

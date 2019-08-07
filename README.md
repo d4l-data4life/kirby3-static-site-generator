@@ -40,11 +40,12 @@ Alternatively, create a `static-site-generator` folder in `site/plugins`, downlo
 ### 1) Directly (e.g. from a kirby hook)
 
 ```php
-$staticSiteGenerator = new D4L\StaticSiteGenerator($kirby, $pathsToCopy = null);
+$staticSiteGenerator = new D4L\StaticSiteGenerator($kirby, $pathsToCopy = null, $pages = null);
 $fileList = $staticSiteGenerator->generate($outputFolder = './static', $baseUrl = '/', $preserve = []);
 ```
 
 - `$pathsToCopy`: if not given, `$kirby->roots()->assets()` is used; set to `[]` to skip copying other files than media
+- `$pages`: if not given, all pages are rendered
 - use `$preserve` to preserve individual files or folders in your output folder, e.g. if you want to preserve a `README.md` in your output folder, set `$preserve`to `['README.md']`; any files or folders directly in the root level and starting with `.` are always preserved (e.g. `.git`)
 
 ### 2) By triggering an endpoint
@@ -72,7 +73,8 @@ return [
         'output_folder' => './static', # you can specify an absolute or relative path
         'preserve' => [], # preserve individual files / folders in the root level of the output folder (anything starting with "." is always preserved)
         'base_url' => '/', # if the static site is not mounted to the root folder of your domain, change accordingly here
-        'skip_media' => false # set to true to skip copying media files, e.g. when they are already on a CDN; combinable with 'preserve' => ['media']
+        'skip_media' => false, # set to true to skip copying media files, e.g. when they are already on a CDN; combinable with 'preserve' => ['media']
+        'skip_templates' => [] # ignore pages with given templates (home is always rendered)
       ]
     ]
 ];
