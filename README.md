@@ -72,7 +72,7 @@ return [
         'output_folder' => './static', # you can specify an absolute or relative path
         'preserve' => [], # preserve individual files / folders in the root level of the output folder (anything starting with "." is always preserved)
         'base_url' => '/', # if the static site is not mounted to the root folder of your domain, change accordingly here
-        'skip_media' => false # set to true to skip copying media files, e.g. when it is on a CDN; combinable with 'preserve' => ['media']
+        'skip_media' => false # set to true to skip copying media files, e.g. when they are already on a CDN; combinable with 'preserve' => ['media']
       ]
     ]
 ];
