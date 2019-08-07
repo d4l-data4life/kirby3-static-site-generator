@@ -71,7 +71,8 @@ return [
         'endpoint' => null, # set to any string like 'generate-static-site' to use the built-in endpoint (necessary when using the blueprint field)
         'output_folder' => './static', # you can specify an absolute or relative path
         'preserve' => [], # preserve individual files / folders in the root level of the output folder (anything starting with "." is always preserved)
-        'base_url' => '/' # if the static site is not mounted to the root folder of your domain, change accordingly here
+        'base_url' => '/', # if the static site is not mounted to the root folder of your domain, change accordingly here
+        'skip_media' => false # set to true to skip copying media files, e.g. when it is on a CDN; combinable with 'preserve' => ['media']
       ]
     ]
 ];
@@ -79,6 +80,7 @@ return [
 
 All of these options are only relevant if you use implementation options 2) or 3).
 When directly using the `D4L\StaticSiteGenerator` class, no config options are required.
+In that case, options like `skip_media` can be achieved by calling `$staticSiteGenerator->skipMedia(true)`.
 
 ## Field options
 
