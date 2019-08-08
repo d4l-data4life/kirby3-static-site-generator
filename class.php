@@ -7,6 +7,7 @@ use Error;
 use F;
 use Kirby\Cms\App;
 use Kirby\Cms\Page;
+use Kirby\Cms\Pages;
 use Whoops\Exception\ErrorException;
 
 
@@ -25,7 +26,7 @@ class StaticSiteGenerator
 
   protected $_skipCopyingMedia = false;
 
-  public function __construct(App $kirby, array $pathsToCopy = null)
+  public function __construct(App $kirby, array $pathsToCopy = null, Pages $pages = null)
   {
     $this->_kirby = $kirby;
 
@@ -33,7 +34,7 @@ class StaticSiteGenerator
     $this->_pathsToCopy = $this->_resolveRelativePaths($this->_pathsToCopy);
     $this->_outputFolder = $this->_resolveRelativePath('./static');
 
-    $this->_pages = $kirby->site()->index();
+    $this->_pages = $pages ?: $kirby->site()->index();
 
     $this->_originalBaseUrl = $kirby->urls()->base();
     $this->_defaultLanguage = $kirby->languages()->default();
