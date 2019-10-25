@@ -65,7 +65,7 @@ class StaticSiteGenerator
 
     $homePage = $this->_pages->findBy('isHomePage', 'true');
     $this->_setPageLanguage($homePage, $this->_defaultLanguage ? $this->_defaultLanguage->code() : null);
-    $this->_generatePage($homePage, $this->_outputFolder . DIRECTORY_SEPARATOR . 'index.html', $baseUrl);
+    $this->_generatePage($homePage, $this->_outputFolder . '/index.html', $baseUrl);
 
     foreach ($this->_languages as $languageCode) {
       $this->_generatePagesByLanguage($baseUrl, $languageCode);
@@ -93,7 +93,7 @@ class StaticSiteGenerator
       $this->_setPageLanguage($page, $languageCode);
       $path = str_replace($this->_originalBaseUrl, '/', $page->url());
       $path = str_replace('//', '/', $path);
-      $path = $this->_outputFolder . str_replace('/', DIRECTORY_SEPARATOR, $path) . DIRECTORY_SEPARATOR . 'index.html';
+      $path = $this->_outputFolder . $path . '/index.html';
       try {
         $this->_generatePage($page, $path, $baseUrl);
       } catch (ErrorException $error) {
@@ -149,7 +149,7 @@ class StaticSiteGenerator
     }
 
     $folderName = $this->_getFolderName($folder);
-    $targetPath = $outputFolder . DIRECTORY_SEPARATOR . $folderName;
+    $targetPath = $outputFolder . DS . $folderName;
 
     if (is_file($folder)) {
       return $this->_copyFile($folder, $targetPath);
@@ -174,7 +174,7 @@ class StaticSiteGenerator
       $file = $item['root'];
       $path = str_replace($this->_originalBaseUrl, '/', $item['url']);
       $path = str_replace('//', '/', $path);
-      $path =  $outputFolder . str_replace('/', DIRECTORY_SEPARATOR, $path);
+      $path =  $outputFolder . $path;
       $this->_copyFile($file, $path);
     }
 
@@ -245,7 +245,7 @@ class StaticSiteGenerator
       return realpath($path) ?: $path;
     }
 
-    $path = $this->_kirby->roots()->index() . DIRECTORY_SEPARATOR . $path;
+    $path = $this->_kirby->roots()->index() . DS . $path;
     return realpath($path) ?: $path;
   }
 
