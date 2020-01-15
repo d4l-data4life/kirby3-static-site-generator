@@ -2,12 +2,12 @@
 
 namespace D4L;
 
-use Dir;
 use Error;
-use F;
 use Kirby\Cms\App;
 use Kirby\Cms\Page;
 use Kirby\Cms\Pages;
+use Kirby\Toolkit\Dir;
+use Kirby\Toolkit\F;
 use Whoops\Exception\ErrorException;
 
 
@@ -64,8 +64,10 @@ class StaticSiteGenerator
     $copyMedia && StaticSiteGeneratorMedia::setActive(true);
 
     $homePage = $this->_pages->findBy('isHomePage', 'true');
-    $this->_setPageLanguage($homePage, $this->_defaultLanguage ? $this->_defaultLanguage->code() : null);
-    $this->_generatePage($homePage, $this->_outputFolder . '/index.html', $baseUrl);
+    if ($homePage) {
+      $this->_setPageLanguage($homePage, $this->_defaultLanguage ? $this->_defaultLanguage->code() : null);
+      $this->_generatePage($homePage, $this->_outputFolder . '/index.html', $baseUrl);
+    }
 
     foreach ($this->_languages as $languageCode) {
       $this->_generatePagesByLanguage($baseUrl, $languageCode);
