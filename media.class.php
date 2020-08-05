@@ -4,8 +4,8 @@ namespace D4L;
 
 use Kirby;
 
-$versionFn = Kirby::component('file::version');
-$urlFn = Kirby::component('file::url');
+$versionFn = (new Kirby)->component('file::version');
+$urlFn = (new Kirby)->component('file::url');
 
 
 Kirby::plugin('d4l/static-site-generator-media', [
