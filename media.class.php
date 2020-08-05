@@ -2,10 +2,10 @@
 
 namespace D4L;
 
-use Kirby;
+use Kirby\Cms\App as Kirby;
 
-$versionFn = Kirby::component('file::version');
-$urlFn = Kirby::component('file::url');
+$versionFn = kirby()->component('file::version');
+$urlFn = kirby()->component('file::url');
 
 
 Kirby::plugin('d4l/static-site-generator-media', [
