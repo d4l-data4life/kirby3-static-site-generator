@@ -2,7 +2,7 @@
 
 namespace D4L;
 
-use Kirby;
+use Kirby\Cms\App as Kirby;
 
 require_once __DIR__ . '/media.class.php';
 require_once __DIR__ . '/class.php';

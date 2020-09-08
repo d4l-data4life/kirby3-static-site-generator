@@ -17,7 +17,10 @@ Kirby::plugin('d4l/static-site-generator-media', [
         return $version;
       }
 
-      $version->save();
+      if (!$version->exists()) {
+        $version->save();
+      }
+
       StaticSiteGeneratorMedia::register($version->root(), $version->url());
       return $version;
     },
