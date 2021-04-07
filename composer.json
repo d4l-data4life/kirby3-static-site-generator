@@ -1,6 +1,6 @@
 {
   "name": "d4l/kirby-static-site-generator",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "type": "kirby-plugin",
   "description": "Static site generator plugin for Kirby 3",
   "license": "MIT",

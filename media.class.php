@@ -12,6 +12,9 @@ Kirby::plugin('d4l/static-site-generator-media', [
   'components' => [
     'file::version' => function (Kirby $kirby, $file, array $options = []) use ($versionFn) {
       $version = $versionFn($kirby, $file, $options);
+      if ($mediaPlugin = $kirby->option('d4l.static_site_generator.media_plugin', null)) {
+        $version = Kirby::plugin($mediaPlugin)->extends()['components']['file::version']($kirby, $file, $options);
+      }
 
       if (!StaticSiteGeneratorMedia::isActive()) {
         return $version;
@@ -21,17 +24,31 @@ Kirby::plugin('d4l/static-site-generator-media', [
         $version->save();
       }
 
-      StaticSiteGeneratorMedia::register($version->root(), $version->url());
+      $url = $version->url();
+      if ($urlTransform = $kirby->option('d4l.static_site_generator.media_url_transform', null)) {
+        $url = $urlTransform($url, $kirby);
+      }
+
+      StaticSiteGeneratorMedia::register($version->root(), $url);
       return $version;
     },
     'file::url' => function (Kirby $kirby, $file, array $options = []) use ($urlFn) {
       $url = $urlFn($kirby, $file, $options);
+      $mediaPlugin = $kirby->option('d4l.static_site_generator.media_plugin', null);
+      if ($mediaPlugin) {
+        $url = Kirby::plugin($mediaPlugin)->extends()['components']['file::url']($kirby, $file, $options);
+      }
 
       if (!StaticSiteGeneratorMedia::isActive()) {
         return $url;
       }
 
       // $file->publish();
+
+      if ($urlTransform = $kirby->option('d4l.static_site_generator.media_url_transform', null)) {
+        $url = $urlTransform($url, $kirby);
+      }
+
       StaticSiteGeneratorMedia::register($file->root(), $url);
       return $url;
     }
