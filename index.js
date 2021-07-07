@@ -29,7 +29,7 @@ panel.plugin('d4l/static-site-generator', {
       },
       template: `
         <div class="d4l-static-site-generator">
-          <k-box class="d4l-static-site-generator__container" v-if="!response && !isBusy">
+          <k-box class="d4l-static-site-generator__container" v-if="!response && !isBusy" theme="regular">
             <k-form @submit="execute()">
               <k-text theme="help" class="d4l-static-site-generator__help">
                 {{ help }}
@@ -40,7 +40,7 @@ panel.plugin('d4l/static-site-generator', {
             </k-form>
           </k-box>
 
-          <k-box v-if="isBusy" class="d4l-static-site-generator__status">
+          <k-box v-if="isBusy" class="d4l-static-site-generator__status" theme="regular">
             <k-text>{{ progress }}</k-text>
           </k-box>
           <k-box v-if="response && response.success" class="d4l-static-site-generator__status" theme="positive">
