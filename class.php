@@ -4,6 +4,7 @@ namespace D4L;
 
 use Error;
 use Kirby\Cms\App;
+use Kirby\Cms\Ingredients;
 use Kirby\Cms\Page;
 use Kirby\Cms\Pages;
 use Kirby\Toolkit\Dir;
@@ -36,7 +37,6 @@ class StaticSiteGenerator
 
     $this->_pages = $pages ?: $kirby->site()->index();
 
-    $this->_originalBaseUrl = $kirby->urls()->base();
     $this->_defaultLanguage = $kirby->languages()->default();
     $this->_languages = $this->_defaultLanguage ? $kirby->languages()->keys() : [$this->_defaultLanguage];
   }
@@ -58,6 +58,8 @@ class StaticSiteGenerator
 
   public function generatePages(string $baseUrl = '/')
   {
+    $this->_setOriginalBaseUrl();
+
     $baseUrl = rtrim($baseUrl, '/') . '/';
 
     $copyMedia = !$this->_skipCopyingMedia;
@@ -80,12 +82,35 @@ class StaticSiteGenerator
       StaticSiteGeneratorMedia::clearList();
     }
 
+    $this->_restoreOriginalBaseUrl();
     return $this->_fileList;
   }
 
   public function skipMedia($skipCopyingMedia = true)
   {
     $this->_skipCopyingMedia = $skipCopyingMedia;
+  }
+
+  protected function _setOriginalBaseUrl()
+  {
+    if (!$this->_kirby->urls()->base()) {
+      $this->_modifyBaseUrl('%d4l-ssg-base-url%');
+    }
+
+    $this->_originalBaseUrl = $this->_kirby->urls()->base();
+  }
+
+  protected function _restoreOriginalBaseUrl()
+  {
+    if ($this->_originalBaseUrl === '%d4l-ssg-base-url%') {
+      $this->_modifyBaseUrl('');
+    }
+  }
+
+  protected function _modifyBaseUrl(string $baseUrl) {
+    (function() use ($baseUrl) {
+      $this->urls = Ingredients::bake(array_merge($this->urls->toArray(), ['base' => $baseUrl]));
+    })->bindTo($this->_kirby, 'Kirby\\Cms\\App')($this->_kirby);
   }
 
   protected function _generatePagesByLanguage(string $baseUrl, string $languageCode = null)
