@@ -109,7 +109,7 @@ class StaticSiteGenerator
 
   protected function _modifyBaseUrl(string $baseUrl) {
     (function() use ($baseUrl) {
-      $this->urls = Ingredients::bake(array_merge($this->urls->toArray(), ['base' => $baseUrl]));
+      $this->urls = Ingredients::bake(array_merge($this->urls->toArray(), ['index' => $baseUrl, 'base' => $baseUrl]));
     })->bindTo($this->_kirby, 'Kirby\\Cms\\App')($this->_kirby);
   }
 
