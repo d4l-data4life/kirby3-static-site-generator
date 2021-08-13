@@ -28,10 +28,11 @@ Alternatively, create a `static-site-generator` folder in `site/plugins`, downlo
 - Customizable paths to copy
 - Customizable output folder
 - Preserve individual files / folders in the output folder
+- Custom routes (click [here](#custom-routes) for more information)
 
 ## What doesn't work
 
-- Custom routes
+- Dynamic routes
 - Query parameters (unless processed by javascript)
 - Redirections / `die` or `exit` in the code (this also affects the compatibility with some other plugins)
 - Directly opening the html files in the browser with the file protocol (absolute base url `/`)
@@ -75,7 +76,8 @@ return [
         'preserve' => [], # preserve individual files / folders in the root level of the output folder (anything starting with "." is always preserved)
         'base_url' => '/', # if the static site is not mounted to the root folder of your domain, change accordingly here
         'skip_media' => false, # set to true to skip copying media files, e.g. when they are already on a CDN; combinable with 'preserve' => ['media']
-        'skip_templates' => [] # ignore pages with given templates (home is always rendered)
+        'skip_templates' => [], # ignore pages with given templates (home is always rendered)
+        'custom_routes' => [] # see below for more information on custom routes
       ]
     ]
 ];
@@ -95,6 +97,54 @@ success: Custom success message
 error: Custom error message
 ```
 
+## Custom routes
+
+You can also use this plugin to render custom routes. This way, e.g. paginations can be created programmatically.
+
+Custom routes are passed as an array. Each item must contain `path` and `page` properties.
+
+Here is an example array, showing the different configuration options:
+
+```php
+$customRoutes = [
+  [ // minimal configuration
+    'path' => 'foo/bar',
+    'page' => 'some-page-id'
+  ],
+  [ // advanced configuration
+    'path' => 'foo/baz',
+    'page' => page('some-page-id'),
+    'languageCode' => 'en',
+    'baseUrl' => '/custom-base-url/',
+    'data' => [
+      'foo' => 'bar'
+    ]
+  ]
+];
+```
+
+`page` is provided as a string containing the page ID, or as a page object.
+
+If `languageCode` is not provided, the given page is rendered in the default language.
+
+If `baseUrl` is not provided, the default base url is taken.
+
+To pass custom data to the controller or template, use `data`. [Click here](https://getkirby.com/docs/guide/templates/controllers#arguments-from-page-render-in-route) for more information how to use it.
+
+### There are two ways to define custom routes:
+
+#### 1) Directly, when using this plugin directly
+
+```php
+$staticSiteGenerator->setCustomRoutes($customRoutes);
+```
+
+#### 2) Via configuration, when using the endpoint or `static-site-generator` field
+
+```php
+'d4l.static_site_generator.custom_routes' => $customRoutes
+```
+
 ## Warnings
 
 Be careful when specifying the output folder, as the given path (except files starting with `.`) will be erased before the generation! There is a safety check in place to avoid accidental erasure when specifying existing, non-empty folders.
@@ -103,7 +153,7 @@ Be careful when specifying the output folder, as the given path (except files st
 
 Feedback and contributions are welcome!
 
-For commit messages we're following the [gitmoji](https://gitmoji.carloscuesta.me/) guide :smiley:
+For commit messages we're following the [gitmoji](https://gitmoji.dev/) guide :smiley:
 Below you can find an example commit message for fixing a bug:
 :bug: fix copying of individual files
 

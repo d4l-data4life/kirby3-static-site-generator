@@ -25,10 +25,12 @@ Kirby::plugin('d4l/static-site-generator', [
             $preserve = $kirby->option('d4l.static_site_generator.preserve', []);
             $skipMedia = $kirby->option('d4l.static_site_generator.skip_media', false);
             $skipTemplates = array_diff($kirby->option('d4l.static_site_generator.skip_templates', []), ['home']);
+            $customRoutes = $kirby->option('d4l.static_site_generator.custom_routes', []);
 
             $pages = $kirby->site()->index()->filterBy('intendedTemplate', 'not in', $skipTemplates);
             $staticSiteGenerator = new StaticSiteGenerator($kirby, null, $pages);
             $staticSiteGenerator->skipMedia($skipMedia);
+            $staticSiteGenerator->setCustomRoutes($customRoutes);
             $list = $staticSiteGenerator->generate($outputFolder, $baseUrl, $preserve);
             $count = count($list);
             return ['success' => true, 'files' => $list, 'message' => "$count files generated / copied"];

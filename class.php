@@ -7,6 +7,7 @@ use Kirby\Cms\App;
 use Kirby\Cms\Ingredients;
 use Kirby\Cms\Page;
 use Kirby\Cms\Pages;
+use Kirby\Toolkit\A;
 use Kirby\Toolkit\Dir;
 use Kirby\Toolkit\F;
 use Whoops\Exception\ErrorException;
@@ -26,6 +27,8 @@ class StaticSiteGenerator
   protected $_languages;
 
   protected $_skipCopyingMedia = false;
+
+  protected $_customRoutes = [];
 
   public function __construct(App $kirby, array $pathsToCopy = null, Pages $pages = null)
   {
@@ -75,6 +78,10 @@ class StaticSiteGenerator
       $this->_generatePagesByLanguage($baseUrl, $languageCode);
     }
 
+    foreach ($this->_customRoutes as $route) {
+      $this->_generateCustomRoute($baseUrl, $route);
+    }
+
     if ($copyMedia) {
       $this->_copyMediaFiles();
 
@@ -89,6 +96,10 @@ class StaticSiteGenerator
   public function skipMedia($skipCopyingMedia = true)
   {
     $this->_skipCopyingMedia = $skipCopyingMedia;
+  }
+
+  public function setCustomRoutes(array $customRoutes) {
+    $this->_customRoutes = $customRoutes;
   }
 
   protected function _setOriginalBaseUrl()
@@ -124,14 +135,34 @@ class StaticSiteGenerator
       $page = $this->_pages->$key;
       $this->_setPageLanguage($page, $languageCode);
       $path = str_replace($this->_originalBaseUrl, '/', $page->url());
-      $path = str_replace('//', '/', $path);
-      $path = $this->_outputFolder . $path . '/index.html';
+      $path = $this->_cleanPath($this->_outputFolder . $path . '/index.html');
       try {
         $this->_generatePage($page, $path, $baseUrl);
       } catch (ErrorException $error) {
         $this->_handleRenderError($error, $key, $languageCode);
       }
     }
+  }
+
+  protected function _generateCustomRoute(string $baseUrl, array $route)
+  {
+    $path = A::get($route, 'path');
+    $page = A::get($route, 'page');
+    $baseUrl = A::get($route, 'baseUrl', $baseUrl);
+    $data = A::get($route, 'data', []);
+    $languageCode = A::get($route, 'languageCode');
+
+    if (is_string($page)) {
+      $page = page($page);
+    }
+
+    if (!$path || !$page) {
+      return;
+    }
+
+    $path = $this->_cleanPath($this->_outputFolder . '/' . $path . '/index.html');
+    $this->_setPageLanguage($page, $languageCode);
+    $this->_generatePage($page, $path, $baseUrl, $data);
   }
 
   protected function _setPageLanguage(Page $page, string $languageCode = null)
@@ -164,9 +195,9 @@ class StaticSiteGenerator
     })->bindTo($this->_kirby, 'Kirby\\Cms\\App')($this->_kirby);
   }
 
-  protected function _generatePage(Page $page, string $path, string $baseUrl)
+  protected function _generatePage(Page $page, string $path, string $baseUrl, array $data = [])
   {
-    $html = $page->render();
+    $html = $page->render($data);
 
     $jsonOriginalBaseUrl = trim(json_encode($this->_originalBaseUrl), '"');
     $jsonBaseUrl = trim(json_encode($baseUrl), '"');
@@ -213,7 +244,7 @@ class StaticSiteGenerator
     foreach ($mediaList as $item) {
       $file = $item['root'];
       $path = str_replace($this->_originalBaseUrl, '/', $item['url']);
-      $path = str_replace('//', '/', $path);
+      $path = $this->_cleanPath($path);
       $path =  $outputFolder . $path;
       $this->_copyFile($file, $path);
     }
@@ -287,6 +318,17 @@ class StaticSiteGenerator
 
     $path = $this->_kirby->roots()->index() . DS . $path;
     return realpath($path) ?: $path;
+  }
+
+  protected function _cleanPath(string $path): string
+  {
+    $path = str_replace('//', '/', $path);
+
+    if (strpos($path, '//') !== false) {
+      return $this->_cleanPath($path);
+    }
+
+    return $path;
   }
 
   protected function _checkOutputFolder()
