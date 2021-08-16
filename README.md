@@ -131,6 +131,8 @@ If `baseUrl` is not provided, the default base url is taken.
 
 To pass custom data to the controller or template, use `data`. [Click here](https://getkirby.com/docs/guide/templates/controllers#arguments-from-page-render-in-route) for more information how to use it.
 
+⚠️ Have a look [here](https://getkirby.com/docs/reference/system/options/ready) in case you want to dynamically generate the custom routes based on a specific page or point to pages in the config. Kirby comes with a `ready` option for this purpose.
+
 ### There are two ways to define custom routes:
 
 #### 1) Directly, when using this plugin directly
