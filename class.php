@@ -105,7 +105,7 @@ class StaticSiteGenerator
   protected function _setOriginalBaseUrl()
   {
     if (!$this->_kirby->urls()->base()) {
-      $this->_modifyBaseUrl('%d4l-ssg-base-url%');
+      $this->_modifyBaseUrl('http://d4l-ssg-base-url');
     }
 
     $this->_originalBaseUrl = $this->_kirby->urls()->base();
@@ -113,20 +113,17 @@ class StaticSiteGenerator
 
   protected function _restoreOriginalBaseUrl()
   {
-    if ($this->_originalBaseUrl === '%d4l-ssg-base-url%') {
+    if ($this->_originalBaseUrl === 'http://d4l-ssg-base-url') {
       $this->_modifyBaseUrl('');
     }
   }
 
   protected function _modifyBaseUrl(string $baseUrl) {
-    (function() use ($baseUrl) {
-      $urls = array_map(function($url) use ($baseUrl) {
-        $newUrl = $url === '/' ? $baseUrl : $baseUrl . $url;
-        return strpos($url, 'http') === 0 ? $url : $newUrl;
-      }, $this->urls->toArray());
-
-      $this->urls = Ingredients::bake($urls);
-    })->bindTo($this->_kirby, 'Kirby\\Cms\\App')($this->_kirby);
+    $urls = array_map(function($url) use ($baseUrl) {
+      $newUrl = $url === '/' ? $baseUrl : $baseUrl . $url;
+      return strpos($url, 'http') === 0 ? $url : $newUrl;
+    }, $this->_kirby->urls()->toArray());
+    $this->_kirby = $this->_kirby->clone(['urls' => $urls]);
   }
 
   protected function _generatePagesByLanguage(string $baseUrl, string $languageCode = null)
@@ -197,6 +194,7 @@ class StaticSiteGenerator
 
   protected function _generatePage(Page $page, string $path, string $baseUrl, array $data = [])
   {
+    $page->setSite(null);
     $html = $page->render($data);
 
     $jsonOriginalBaseUrl = trim(json_encode($this->_originalBaseUrl), '"');
