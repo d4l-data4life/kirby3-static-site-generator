@@ -105,7 +105,7 @@ class StaticSiteGenerator
   protected function _setOriginalBaseUrl()
   {
     if (!$this->_kirby->urls()->base()) {
-      $this->_modifyBaseUrl('http://d4l-ssg-base-url');
+      $this->_modifyBaseUrl('https://d4l-ssg-base-url');
     }
 
     $this->_originalBaseUrl = $this->_kirby->urls()->base();
@@ -113,7 +113,7 @@ class StaticSiteGenerator
 
   protected function _restoreOriginalBaseUrl()
   {
-    if ($this->_originalBaseUrl === 'http://d4l-ssg-base-url') {
+    if ($this->_originalBaseUrl === 'https://d4l-ssg-base-url') {
       $this->_modifyBaseUrl('');
     }
   }
