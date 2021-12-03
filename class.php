@@ -4,7 +4,6 @@ namespace D4L;
 
 use Error;
 use Kirby\Cms\App;
-use Kirby\Cms\Ingredients;
 use Kirby\Cms\Page;
 use Kirby\Cms\Pages;
 use Kirby\Toolkit\A;
@@ -170,9 +169,9 @@ class StaticSiteGenerator
     $site = $kirby->site();
     $pages = $site->index();
 
-    foreach ($pages as $page) {
-      $page->content = null;
-      foreach ($page->files() as $file) {
+    foreach ($pages as $pageItem) {
+      $pageItem->content = null;
+      foreach ($pageItem->files() as $file) {
         $file->content = null;
       }
     }
