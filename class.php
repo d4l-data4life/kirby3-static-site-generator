@@ -4,7 +4,6 @@ namespace D4L;
 
 use Error;
 use Kirby\Cms\App;
-use Kirby\Cms\Ingredients;
 use Kirby\Cms\Page;
 use Kirby\Cms\Pages;
 use Kirby\Toolkit\A;

@@ -43,8 +43,6 @@ Kirby::plugin('d4l/static-site-generator-media', [
         return $url;
       }
 
-      // $file->publish();
-
       if ($urlTransform = $kirby->option('d4l.static_site_generator.media_url_transform', null)) {
         $url = $urlTransform($url, $kirby);
       }
