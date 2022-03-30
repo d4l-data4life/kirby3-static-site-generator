@@ -286,7 +286,9 @@ class StaticSiteGenerator
 
   protected function _getFileList(string $path, bool $recursively = false)
   {
-    $items = Dir::read($path, [], true);
+    $items = array_map(function($item) {
+      return str_replace('/', DIRECTORY_SEPARATOR, $item);
+    }, Dir::read($path, [], true));
     if (!$recursively) {
       return $items;
     }
@@ -344,7 +346,7 @@ class StaticSiteGenerator
     }
 
     $fileList = array_map(function ($path) use ($folder) {
-      return str_replace($folder . '/', '', $path);
+      return str_replace($folder . DIRECTORY_SEPARATOR, '', $path);
     }, $this->_getFileList($folder));
 
     if (in_array('index.html', $fileList) || in_array('.kirbystatic', $fileList)) {
