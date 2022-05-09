@@ -29,6 +29,7 @@ Alternatively, create a `static-site-generator` folder in `site/plugins`, downlo
 - Customizable output folder
 - Preserve individual files / folders in the output folder
 - Custom routes (click [here](#custom-routes) for more information)
+- Custom pages filtering (click [here](#custom-filters) for more information)
 
 ## What doesn't work
 
