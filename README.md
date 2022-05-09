@@ -78,7 +78,7 @@ return [
         'skip_media' => false, # set to true to skip copying media files, e.g. when they are already on a CDN; combinable with 'preserve' => ['media']
         'skip_templates' => [], # ignore pages with given templates (home is always rendered)
         'custom_routes' => [] # see below for more information on custom routes
-        'custom_routes' => [] # see below for more information on custom filters
+        'custom_filters' => [] # see below for more information on custom filters
       ]
     ]
 ];
