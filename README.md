@@ -152,7 +152,7 @@ $staticSiteGenerator->setCustomRoutes($customRoutes);
 
 ## Custom filters
 
-When using the endpoint or `static-site-generator` field, this plugin will by default render all pages and subpages (using page()->index()).
+When using the endpoint or `static-site-generator` field, this plugin will by default render all pages and subpages (using `page()->index()`).
 You can filter the pages to be rendered by providing an array of custom filters in config option `custom_filters`.
 
 ```php
