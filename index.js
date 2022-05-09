@@ -32,7 +32,7 @@ panel.plugin('d4l/static-site-generator', {
           <k-box class="d4l-static-site-generator__container" v-if="!response && !isBusy" theme="regular">
             <k-form @submit="execute()">
               <k-text theme="help" class="d4l-static-site-generator__help">
-                {{ help }}
+              {{ help.replace(/<\\/?p>/g, '') }}
               </k-text>
               <k-button type="submit" icon="upload" theme="negative" class="d4l-static-site-generator__execute">
                 {{ label }}
