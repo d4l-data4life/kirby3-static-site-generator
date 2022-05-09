@@ -129,6 +129,8 @@ If `languageCode` is not provided, the given page is rendered in the default lan
 
 If `baseUrl` is not provided, the default base url is taken.
 
+`path` may also end with a file name, in which case the given file is created instead of using the `<path>/index.html` schema.
+
 To pass custom data to the controller or template, use `data`. [Click here](https://getkirby.com/docs/guide/templates/controllers#arguments-from-page-render-in-route) for more information how to use it.
 
 ⚠️ Have a look [here](https://getkirby.com/docs/reference/system/options/ready) in case you want to dynamically generate the custom routes based on a specific page or point to pages in the config. Kirby comes with a `ready` option for this purpose.

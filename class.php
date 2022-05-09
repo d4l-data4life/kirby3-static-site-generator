@@ -322,7 +322,7 @@ class StaticSiteGenerator
   protected function _cleanPath(string $path): string
   {
     $path = str_replace('//', '/', $path);
-    $path = preg_replace('/([^\/]+\.htm(l)?)\/index.html$/i', '$1', $path);
+    $path = preg_replace('/([^\/]+\.[a-z]{2,5})\/index.html$/i', '$1', $path);
 
     if (strpos($path, '//') !== false) {
       return $this->_cleanPath($path);
