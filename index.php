@@ -53,8 +53,8 @@ Kirby::plugin('d4l/static-site-generator', [
       'props' => [
         'endpoint' => function () {
           return $this->kirby()->option('d4l.static_site_generator.endpoint');
-        },
-      ],
-    ],
-  ],
+        }
+      ]
+    ]
+  ]
 ]);
