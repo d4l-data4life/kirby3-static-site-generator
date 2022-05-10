@@ -165,14 +165,14 @@ Here is an example array, showing some filters you could use (not exhaustive):
 
 ```php
 $customFilters = [
-    ['slug', '==', 'foo'], // will not render the page if its slug is exactly 'foo'
-    ['url', '!*=', 'bar'], // will not render page if its url doesn't contains 'bar'
-    ['uri', '*', '/[1-9]/'], // will not render page if its uri doesn match regex '/[1-9]/'
-    ['depth', '>', '2'], // will not render page if its depth is greater than 2
-    ['dirname', 'in', ['foo', 'bar']] // will not render page if its dirname is in ['foo' or 'bar'],
-    ['category', 'bar'], // will not render page if its value in 'category' field is 'bar' ('category' being a single value field)
-    ['tags', 'bar', ','], // will not render page if its value in 'tags' field includes 'bar' ('tags' being a field accepting a comma separated list of values)
-    ['date', 'date <', '2018-01-01'], // will not render page if its date is before '2018-01-01'
+  ['slug', '==', 'foo'], // will not render the page if its slug is exactly 'foo'
+  ['url', '!*=', 'bar'], // will not render page if its url doesn't contain 'bar'
+  ['uri', '*', '/[1-9]/'], // will not render page if its uri doesn't match regex '/[1-9]/'
+  ['depth', '>', '2'], // will not render page if its depth is greater than 2
+  ['dirname', 'in', ['foo', 'bar']] // will not render page if its dirname is in ['foo' or 'bar'],
+  ['category', 'bar'], // will not render page if its value in 'category' field is 'bar' ('category' being a single value field)
+  ['tags', 'bar', ','], // will not render page if its value in 'tags' field includes 'bar' ('tags' being a field accepting a comma-separated list of values)
+  ['date', 'date <', '2018-01-01'], // will not render page if its date is before '2018-01-01'
 ];
 ```
 
