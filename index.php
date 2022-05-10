@@ -26,8 +26,16 @@ Kirby::plugin('d4l/static-site-generator', [
             $skipMedia = $kirby->option('d4l.static_site_generator.skip_media', false);
             $skipTemplates = array_diff($kirby->option('d4l.static_site_generator.skip_templates', []), ['home']);
             $customRoutes = $kirby->option('d4l.static_site_generator.custom_routes', []);
+            $customFilters = $kirby->option('d4l.static_site_generator.custom_filters', []);
+            if (!empty($skipTemplates)) {
+              array_push($customFilters, ['intendedTemplate', 'not in', $skipTemplates]);
+            }
 
-            $pages = $kirby->site()->index()->filterBy('intendedTemplate', 'not in', $skipTemplates);
+            $pages = $kirby->site()->index();
+            foreach ($customFilters as $filter) {
+              $pages = $pages->filterBy(...$filter);
+            }
+
             $staticSiteGenerator = new StaticSiteGenerator($kirby, null, $pages);
             $staticSiteGenerator->skipMedia($skipMedia);
             $staticSiteGenerator->setCustomRoutes($customRoutes);
