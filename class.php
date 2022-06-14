@@ -97,7 +97,8 @@ class StaticSiteGenerator
     $this->_skipCopyingMedia = $skipCopyingMedia;
   }
 
-  public function setCustomRoutes(array $customRoutes) {
+  public function setCustomRoutes(array $customRoutes)
+  {
     $this->_customRoutes = $customRoutes;
   }
 
@@ -117,8 +118,9 @@ class StaticSiteGenerator
     }
   }
 
-  protected function _modifyBaseUrl(string $baseUrl) {
-    $urls = array_map(function($url) use ($baseUrl) {
+  protected function _modifyBaseUrl(string $baseUrl)
+  {
+    $urls = array_map(function ($url) use ($baseUrl) {
       $newUrl = $url === '/' ? $baseUrl : $baseUrl . $url;
       return strpos($url, 'http') === 0 ? $url : $newUrl;
     }, $this->_kirby->urls()->toArray());
@@ -169,6 +171,11 @@ class StaticSiteGenerator
     $site = $kirby->site();
     $pages = $site->index();
 
+    $page->content = null;
+    foreach ($page->files() as $file) {
+      $file->content = null;
+    }
+
     foreach ($pages as $pageItem) {
       $pageItem->content = null;
       foreach ($pageItem->files() as $file) {
@@ -185,8 +192,9 @@ class StaticSiteGenerator
     $site->visit($page, $languageCode);
   }
 
-  protected function _resetCollections() {
-    (function() {
+  protected function _resetCollections()
+  {
+    (function () {
       $this->collections = null;
     })->bindTo($this->_kirby, 'Kirby\\Cms\\App')($this->_kirby);
   }
@@ -286,7 +294,7 @@ class StaticSiteGenerator
 
   protected function _getFileList(string $path, bool $recursively = false)
   {
-    $items = array_map(function($item) {
+    $items = array_map(function ($item) {
       return str_replace('/', DIRECTORY_SEPARATOR, $item);
     }, Dir::read($path, [], true));
     if (!$recursively) {
