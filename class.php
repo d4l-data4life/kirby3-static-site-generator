@@ -331,6 +331,7 @@ class StaticSiteGenerator
   {
     $path = str_replace('//', '/', $path);
     $path = preg_replace('/([^\/]+\.[a-z]{2,5})\/index.html$/i', '$1', $path);
+    $path = preg_replace('/(\.[^\/.]+)\/index.html$/i', '$1', $path);
 
     if (strpos($path, '//') !== false) {
       return $this->_cleanPath($path);
