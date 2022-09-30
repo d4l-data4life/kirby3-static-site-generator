@@ -132,7 +132,7 @@ $customRoutes = [
 ];
 ```
 
-Only `GET` routes are supported. Patterns and action arguments are supported.
+Only `GET` routes without `language` scope are supported (you can of course add multiple custom routes for multiple languages). Patterns and action arguments are supported.
 
 `page` is provided as a string containing the page ID, or as a page object.
 
