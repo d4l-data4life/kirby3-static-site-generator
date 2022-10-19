@@ -24,6 +24,7 @@ class StaticSiteGenerator
   protected $_originalBaseUrl;
   protected $_defaultLanguage;
   protected $_languages;
+  protected $_ignoreUntranslatedPages;
 
   protected $_skipCopyingMedia = false;
 
@@ -102,6 +103,11 @@ class StaticSiteGenerator
     $this->_customRoutes = $customRoutes;
   }
 
+  public function setIgnoreUntranslatedPages(bool $ignoreUntranslatedPages = null)
+  {
+    $this->_ignoreUntranslatedPages = $ignoreUntranslatedPages;
+  }
+
   protected function _setOriginalBaseUrl()
   {
     if (!$this->_kirby->urls()->base()) {
@@ -131,13 +137,15 @@ class StaticSiteGenerator
   {
     foreach ($this->_pages->keys() as $key) {
       $page = $this->_pages->$key;
-      $this->_setPageLanguage($page, $languageCode);
-      $path = str_replace($this->_originalBaseUrl, '/', $page->url());
-      $path = $this->_cleanPath($this->_outputFolder . $path . '/index.html');
-      try {
-        $this->_generatePage($page, $path, $baseUrl);
-      } catch (ErrorException $error) {
-        $this->_handleRenderError($error, $key, $languageCode);
+      if(!$this->_ignoreUntranslatedPages || $page->translation($languageCode)->exists()){
+        $this->_setPageLanguage($page, $languageCode);
+        $path = str_replace($this->_originalBaseUrl, '/', $page->url());
+        $path = $this->_cleanPath($this->_outputFolder . $path . '/index.html');
+        try {
+          $this->_generatePage($page, $path, $baseUrl);
+        } catch (ErrorException $error) {
+          $this->_handleRenderError($error, $key, $languageCode);
+        }
       }
     }
   }

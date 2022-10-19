@@ -78,8 +78,9 @@ return [
         'base_url' => '/', # if the static site is not mounted to the root folder of your domain, change accordingly here
         'skip_media' => false, # set to true to skip copying media files, e.g. when they are already on a CDN; combinable with 'preserve' => ['media']
         'skip_templates' => [], # ignore pages with given templates (home is always rendered)
-        'custom_routes' => [] # see below for more information on custom routes
-        'custom_filters' => [] # see below for more information on custom filters
+        'custom_routes' => [], # see below for more information on custom routes
+        'custom_filters' => [], # see below for more information on custom filters
+        'ignoreUntranslatedPages' => false # set to true to ignore pages without an own language
       ]
     ]
 ];
