@@ -80,7 +80,7 @@ return [
         'skip_templates' => [], # ignore pages with given templates (home is always rendered)
         'custom_routes' => [], # see below for more information on custom routes
         'custom_filters' => [], # see below for more information on custom filters
-        'ignoreUntranslatedPages' => false # set to true to ignore pages without an own language
+        'ignore_untranslated_pages' => false # set to true to ignore pages without an own language
       ]
     ]
 ];

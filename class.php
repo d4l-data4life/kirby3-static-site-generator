@@ -24,7 +24,7 @@ class StaticSiteGenerator
   protected $_originalBaseUrl;
   protected $_defaultLanguage;
   protected $_languages;
-  protected $_ignoreUntranslatedPages;
+  protected $_ignoreUntranslatedPages = false;
 
   protected $_skipCopyingMedia = false;
 
@@ -103,7 +103,7 @@ class StaticSiteGenerator
     $this->_customRoutes = $customRoutes;
   }
 
-  public function setIgnoreUntranslatedPages(bool $ignoreUntranslatedPages = null)
+  public function setIgnoreUntranslatedPages(bool $ignoreUntranslatedPages)
   {
     $this->_ignoreUntranslatedPages = $ignoreUntranslatedPages;
   }
@@ -137,15 +137,17 @@ class StaticSiteGenerator
   {
     foreach ($this->_pages->keys() as $key) {
       $page = $this->_pages->$key;
-      if(!$this->_ignoreUntranslatedPages || $page->translation($languageCode)->exists()){
-        $this->_setPageLanguage($page, $languageCode);
-        $path = str_replace($this->_originalBaseUrl, '/', $page->url());
-        $path = $this->_cleanPath($this->_outputFolder . $path . '/index.html');
-        try {
-          $this->_generatePage($page, $path, $baseUrl);
-        } catch (ErrorException $error) {
-          $this->_handleRenderError($error, $key, $languageCode);
-        }
+      if($this->_ignoreUntranslatedPages && !$page->translation($languageCode)->exists()){
+        continue;
+      }
+
+      $this->_setPageLanguage($page, $languageCode);
+      $path = str_replace($this->_originalBaseUrl, '/', $page->url());
+      $path = $this->_cleanPath($this->_outputFolder . $path . '/index.html');
+      try {
+        $this->_generatePage($page, $path, $baseUrl);
+      } catch (ErrorException $error) {
+        $this->_handleRenderError($error, $key, $languageCode);
       }
     }
   }
