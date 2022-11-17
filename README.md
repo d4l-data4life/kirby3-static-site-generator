@@ -117,6 +117,12 @@ $customRoutes = [
     'path' => 'foo/bar',
     'page' => 'some-page-id'
   ],
+  [ // render a route with a page + language context (e.g. for pagination)
+    'path' => 'de/notes/2',
+    'page' => 'notes',
+    'route' => 'ssg/notes/page:2',
+    'languageCode' => 'de',
+  ],
   [ // advanced configuration to render a route (write to different path)
     'path' => 'sitemap.xml',
     'route' => 'my/sitemap/route'

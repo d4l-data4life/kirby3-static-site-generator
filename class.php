@@ -133,6 +133,20 @@ class StaticSiteGenerator
     $this->_kirby = $this->_kirby->clone(['urls' => $urls]);
   }
 
+  protected function _setCurrentPath(Page $page, string | null $languageCode)
+  {
+    $language = $languageCode ? $this->_kirby->languages()->find($languageCode) : null;
+    $path = trim(parse_url($page->url(), PHP_URL_PATH) ?? '', '/');
+
+    $this->_kirby = $this->_kirby->clone(
+      array_merge(
+        [],
+        $language ? ['language' => $language] : [],
+        $path ? ['path' => $path ] : []
+      )
+    );
+  }
+
   protected function _generatePagesByLanguage(string $baseUrl, string $languageCode = null)
   {
     foreach ($this->_pages->keys() as $key) {
@@ -179,18 +193,24 @@ class StaticSiteGenerator
       $page = page($page);
     }
 
-    $routeContent = $page ? null : $this->_getRouteContent($routePath ?: $path);
-
-    if (!$path || (!$page && !$routeContent)) {
-      return;
-    }
+    $hasPage = !!$page;
 
     if (!$page) {
       $page = new Page(['slug' => 'static-site-generator/' . uniqid()]);
     }
 
-    $path = $this->_cleanPath($this->_outputFolder . '/' . $path . '/index.html');
     $this->_setPageLanguage($page, $languageCode);
+
+    $routeContent = $hasPage && !$routePath ? null : $this->_getRouteContent($routePath ?: $path);
+
+    if (!$path || (!$hasPage && !$routeContent)) {
+      return;
+    }
+
+    $path = $this->_cleanPath(
+      $this->_outputFolder . '/' . $path . '/index.html'
+    );
+
     $this->_generatePage($page, $path, $baseUrl, $data, $routeContent);
   }
 
@@ -220,6 +240,9 @@ class StaticSiteGenerator
     }
 
     $kirby->cache('pages')->flush();
+
+    $site->visit($page, $languageCode);
+    $this->_setCurrentPath($page, $languageCode);
     $site->visit($page, $languageCode);
   }
 
