@@ -36,6 +36,7 @@ Alternatively, create a `static-site-generator` folder in `site/plugins`, downlo
 - Dynamic routes (unless when called by custom route - click [here](#custom-routes) for more information)
 - Query parameters (unless processed by javascript)
 - Redirections / `die` or `exit` in the code (this also affects the compatibility with some other plugins)
+- Kirby paginations (only manual paginations via custom routes)
 - Directly opening the html files in the browser with the file protocol (absolute base url `/`)
 
 ## How to use it
