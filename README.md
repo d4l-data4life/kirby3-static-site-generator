@@ -38,6 +38,7 @@ Alternatively, create a `static-site-generator` folder in `site/plugins`, downlo
 - Redirections / `die` or `exit` in the code (this also affects the compatibility with some other plugins)
 - Kirby paginations (only manual paginations via custom routes)
 - Directly opening the html files in the browser with the file protocol (absolute base url `/`)
+- Compatibility with other plugins that work with the `file::version` and `file::url` components
 
 ## How to use it
 
