@@ -27,7 +27,8 @@ Kirby::plugin('d4l/static-site-generator', [
             $skipTemplates = array_diff($kirby->option('d4l.static_site_generator.skip_templates', []), ['home']);
             $customRoutes = $kirby->option('d4l.static_site_generator.custom_routes', []);
             $customFilters = $kirby->option('d4l.static_site_generator.custom_filters', []);
-            $ignoreUntranslatedPages = $kirby->option('d4l.static_site_generator.ignoreUntranslatedPages', false);
+            $ignoreUntranslatedPages = $kirby->option('d4l.static_site_generator.ignore_untranslated_pages', false);
+            $indexFileName = $kirby->option('d4l.static_site_generator.index_file_name', 'index.html');
             if (!empty($skipTemplates)) {
               array_push($customFilters, ['intendedTemplate', 'not in', $skipTemplates]);
             }
@@ -41,6 +42,7 @@ Kirby::plugin('d4l/static-site-generator', [
             $staticSiteGenerator->skipMedia($skipMedia);
             $staticSiteGenerator->setCustomRoutes($customRoutes);
             $staticSiteGenerator->setIgnoreUntranslatedPages($ignoreUntranslatedPages);
+            $staticSiteGenerator->setIndexFileName($indexFileName);
             $list = $staticSiteGenerator->generate($outputFolder, $baseUrl, $preserve);
             $count = count($list);
             return ['success' => true, 'files' => $list, 'message' => "$count files generated / copied"];

@@ -52,6 +52,7 @@ $fileList = $staticSiteGenerator->generate($outputFolder = './static', $baseUrl 
 - `$pathsToCopy`: if not given, `$kirby->roots()->assets()` is used; set to `[]` to skip copying other files than media
 - `$pages`: if not given, all pages are rendered
 - use `$preserve` to preserve individual files or folders in your output folder, e.g. if you want to preserve a `README.md` in your output folder, set `$preserve`to `['README.md']`; any files or folders directly in the root level and starting with `.` are always preserved (e.g. `.git`)
+- The `D4L\StaticSiteGenerator` class offers a couple of public methods that allow to make further configuration changes.
 
 ### 2) By triggering an endpoint
 
@@ -82,7 +83,8 @@ return [
         'skip_templates' => [], # ignore pages with given templates (home is always rendered)
         'custom_routes' => [], # see below for more information on custom routes
         'custom_filters' => [], # see below for more information on custom filters
-        'ignore_untranslated_pages' => false # set to true to ignore pages without an own language
+        'ignore_untranslated_pages' => false, # set to true to ignore pages without an own language
+        'index_file_name' => 'index.html' # you can change the directory index file name, e.g. to 'index.json' when generating an API
       ]
     ]
 ];
