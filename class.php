@@ -212,11 +212,11 @@ class StaticSiteGenerator
     }
 
     $path = $this->_cleanPath($this->_outputFolder . '/' . $path . '/' . $this->_indexFileName);
-    $this->_setPageLanguage($page, $languageCode, $page->exists());
+    $this->_setPageLanguage($page, $languageCode, false);
     $this->_generatePage($page, $path, $baseUrl, $data, $routeContent);
   }
 
-  protected function _setPageLanguage(Page $page, string $languageCode = null, $reset = true)
+  protected function _setPageLanguage(Page $page, string $languageCode = null, $forceReset = true)
   {
     $this->_resetCollections();
 
@@ -224,23 +224,23 @@ class StaticSiteGenerator
     $site = $kirby->site();
     $pages = $site->index();
 
-    if ($reset) {
+    if ($page->exists() || $forceReset) {
       $page->content = null;
       foreach ($page->files() as $file) {
         $file->content = null;
       }
+    }
 
-      foreach ($pages as $pageItem) {
-        $pageItem->content = null;
-        foreach ($pageItem->files() as $file) {
-          $file->content = null;
-        }
-      }
-
-      $site->content = null;
-      foreach ($site->files() as $file) {
+    foreach ($pages as $pageItem) {
+      $pageItem->content = null;
+      foreach ($pageItem->files() as $file) {
         $file->content = null;
       }
+    }
+
+    $site->content = null;
+    foreach ($site->files() as $file) {
+      $file->content = null;
     }
 
     $kirby->cache('pages')->flush();
