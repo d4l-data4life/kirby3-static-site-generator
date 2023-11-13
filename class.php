@@ -6,6 +6,7 @@ use Error;
 use Kirby\Cms\App;
 use Kirby\Cms\Page;
 use Kirby\Cms\Pages;
+use Kirby\Cms\Site;
 use Kirby\Toolkit\A;
 use Kirby\Toolkit\Dir;
 use Kirby\Toolkit\F;
@@ -216,6 +217,16 @@ class StaticSiteGenerator
     $this->_generatePage($page, $path, $baseUrl, $data, $routeContent);
   }
 
+  protected function _resetPage(Page|Site $page) {
+    $reflection = new \ReflectionClass($page::class);
+
+    $page->content = null;
+
+    $children = $reflection->getProperty('children');
+    $children->setAccessible(true);
+    $children->setValue($page, null);
+  }
+
   protected function _setPageLanguage(Page $page, string $languageCode = null, $forceReset = true)
   {
     $this->_resetCollections();
@@ -225,20 +236,20 @@ class StaticSiteGenerator
     $pages = $site->index();
 
     if ($page->exists() || $forceReset) {
-      $page->content = null;
+      $this->_resetPage($page);
       foreach ($page->files() as $file) {
         $file->content = null;
       }
     }
 
     foreach ($pages as $pageItem) {
-      $pageItem->content = null;
+      $this->_resetPage($pageItem);
       foreach ($pageItem->files() as $file) {
         $file->content = null;
       }
     }
 
-    $site->content = null;
+    $this->_resetPage($site);
     foreach ($site->files() as $file) {
       $file->content = null;
     }
