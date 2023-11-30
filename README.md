@@ -1,4 +1,4 @@
-# Kirby 3 - Static Site Generator
+# Kirby 3+ - Static Site Generator
 
 ![License](https://img.shields.io/github/license/mashape/apistatus.svg) ![Kirby Version](https://img.shields.io/badge/Kirby-3%2B-black.svg)
 
