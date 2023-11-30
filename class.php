@@ -218,13 +218,15 @@ class StaticSiteGenerator
   }
 
   protected function _resetPage(Page|Site $page) {
-    $reflection = new \ReflectionClass($page::class);
-
     $page->content = null;
 
-    $children = $reflection->getProperty('children');
-    $children->setAccessible(true);
-    $children->setValue($page, null);
+    foreach ($page->children() as $child) {
+      $this->_resetPage($child);
+    }
+
+    foreach ($page->files() as $file) {
+      $file->content = null;
+    }
   }
 
   protected function _setPageLanguage(Page $page, string $languageCode = null, $forceReset = true)
@@ -232,26 +234,14 @@ class StaticSiteGenerator
     $this->_resetCollections();
 
     $kirby = $this->_kirby;
+    $kirby->setCurrentTranslation($languageCode);
+    $kirby->setCurrentLanguage($languageCode);
+
     $site = $kirby->site();
-    $pages = $site->index();
+    $this->_resetPage($site);
 
     if ($page->exists() || $forceReset) {
       $this->_resetPage($page);
-      foreach ($page->files() as $file) {
-        $file->content = null;
-      }
-    }
-
-    foreach ($pages as $pageItem) {
-      $this->_resetPage($pageItem);
-      foreach ($pageItem->files() as $file) {
-        $file->content = null;
-      }
-    }
-
-    $this->_resetPage($site);
-    foreach ($site->files() as $file) {
-      $file->content = null;
     }
 
     $kirby->cache('pages')->flush();
