@@ -281,7 +281,7 @@ class StaticSiteGenerator
     }
 
     $folderName = $this->_getFolderName($folder);
-    $targetPath = $outputFolder . DS . $folderName;
+    $targetPath = $outputFolder . '/' . $folderName;
 
     if (is_file($folder)) {
       return $this->_copyFile($folder, $targetPath);
@@ -392,7 +392,7 @@ class StaticSiteGenerator
       return realpath($path) ?: $path;
     }
 
-    $path = $this->_kirby->roots()->index() . DS . $path;
+    $path = $this->_kirby->roots()->index() . '/' . $path;
     return realpath($path) ?: $path;
   }
 
