@@ -213,7 +213,7 @@ class StaticSiteGenerator
     }
 
     $path = $this->_cleanPath($this->_outputFolder . '/' . $path . '/' . $this->_indexFileName);
-    $this->_setPageLanguage($page, $languageCode, false);
+    $this->_setPageLanguage($page, $languageCode);
     $this->_generatePage($page, $path, $baseUrl, $data, $routeContent);
   }
 
